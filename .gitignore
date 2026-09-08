@@ -1,0 +1,19 @@
+.gradle/
+.kotlin/
+.idea/
+.firecrawl/
+tmp/
+local.properties
+*.iml
+.DS_Store
+
+# Generated build output
+build/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local signing material
+*.jks
+*.keystore
