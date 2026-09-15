@@ -30,6 +30,13 @@ RateRadarKZ/
 │   └── SIS1_Project_Description.md
 ├── output/pdf/
 │   └── RateRadar_KZ_SIS1.pdf
+├── sis2/                      # SIS2: LeetCode problems in Kotlin
+│   ├── 01_TwoSum.kt
+│   ├── 14_LongestCommonPrefix.kt
+│   ├── 20_ValidParentheses.kt
+│   ├── 21_MergeTwoSortedLists.kt
+│   ├── 242_ValidAnagram.kt
+│   └── README.md
 ├── gradle/wrapper/
 ├── .gitignore
 ├── build.gradle.kts
@@ -56,3 +63,7 @@ The project uses JDK 17 bytecode, Android SDK 36, and requires Android 7.0 (API 
 ## Documentation
 
 The SIS1 project idea, navigation flow chart, and functionality list are in [docs/SIS1_Project_Description.md](docs/SIS1_Project_Description.md).
+
+## SIS2 — Kotlin problems
+
+Five Easy LeetCode problems solved in idiomatic Kotlin, one file per problem, with a short description of each approach: [sis2/](sis2/README.md).
