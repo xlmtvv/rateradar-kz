@@ -1,50 +1,53 @@
 package kz.edu.kbtu.rateradar.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-
-private val ColorWhite = androidx.compose.ui.graphics.Color.White
 
 private val LightColors = lightColorScheme(
-    primary = Teal,
-    onPrimary = ColorWhite,
-    primaryContainer = LightTeal,
-    onPrimaryContainer = Navy,
-    background = Ice,
-    onBackground = Navy,
-    surface = Ice,
-    onSurface = Navy,
-    onSurfaceVariant = Slate,
+    primary = TealPrimary,
+    onPrimary = OnTealPrimary,
+    primaryContainer = TealContainer,
+    onPrimaryContainer = OnTealContainer,
+    secondary = GraySecondary,
+    onSecondary = OnGraySecondary,
+    secondaryContainer = GrayContainer,
+    onSecondaryContainer = OnGrayContainer,
+    background = LightBackground,
+    onBackground = DarkText,
+    surface = LightSurface,
+    onSurface = DarkText,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = GrayText,
+    outline = LightOutline,
 )
 
 private val DarkColors = darkColorScheme(
-    primary = LightTeal,
-    onPrimary = Navy,
-    primaryContainer = Teal,
-    onPrimaryContainer = ColorWhite,
+    primary = TealPrimaryDark,
+    onPrimary = OnTealPrimaryDark,
+    primaryContainer = TealContainerDark,
+    onPrimaryContainer = OnTealContainerDark,
+    secondary = GraySecondaryDark,
+    onSecondary = OnGraySecondaryDark,
+    secondaryContainer = GrayContainerDark,
+    onSecondaryContainer = OnGrayContainerDark,
+    background = DarkBackground,
+    onBackground = LightText,
+    surface = DarkSurface,
+    onSurface = LightText,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = LightGrayText,
+    outline = DarkOutline,
 )
 
 @Composable
 fun RateRadarTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
-    val colors = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColors
-        else -> LightColors
-    }
+    val colors = if (darkTheme) DarkColors else LightColors
 
     MaterialTheme(
         colorScheme = colors,
