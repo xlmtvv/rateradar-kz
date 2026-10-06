@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">RateRadar KZ</string>
+
+    <!-- Screen titles -->
+    <string name="title_offices">Exchange Offices</string>
+    <string name="title_details">Office Details</string>
+    <string name="title_favorites">Favorites</string>
+
+    <!-- Buttons and icons -->
+    <string name="open_favorites">Open favorites</string>
+    <string name="back">Back</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+
+    <!-- Rates -->
+    <string name="buy">Buy USD</string>
+    <string name="sell">Sell USD</string>
+    <string name="rate_value">%1$.2f ₸</string>
+    <string name="city_and_time">%1$s · updated %2$s</string>
+
+    <!-- Details -->
+    <string name="office_image_description">Photo of the %1$s exchange office</string>
+    <string name="label_city">City: %1$s</string>
+    <string name="label_address">Address: %1$s</string>
+    <string name="label_hours">Working hours: %1$s</string>
+
+    <!-- Empty states -->
+    <string name="empty_favorites_title">No favorites yet</string>
+    <string name="empty_favorites_message">Tap the heart on an office to save it here.</string>
+    <string name="empty_city_title">No offices here</string>
+    <string name="empty_city_message">There are no exchange offices in this city yet. Try another city.</string>
+    <string name="office_not_found_title">Office not found</string>
+    <string name="office_not_found_message">This exchange office does not exist.</string>
 </resources>
