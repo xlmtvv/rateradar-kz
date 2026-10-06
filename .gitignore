@@ -17,3 +17,4 @@ captures/
 # Local signing material
 *.jks
 *.keystore
+sis-files/
