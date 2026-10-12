@@ -43,7 +43,6 @@ fun ExchangeOfficeListScreen(
     onFavoriteClick: (Int) -> Unit,
     onOpenFavorites: () -> Unit,
 ) {
-    // Selected city chip. rememberSaveable keeps it when we come back from another screen.
     var selectedCity by rememberSaveable { mutableStateOf(SampleData.ALL_CITIES) }
 
     val offices = if (selectedCity == SampleData.ALL_CITIES) {

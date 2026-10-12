@@ -14,7 +14,6 @@ import kz.edu.kbtu.rateradar.ui.screens.ExchangeOfficeListScreen
 import kz.edu.kbtu.rateradar.ui.screens.FavoritesScreen
 import kz.edu.kbtu.rateradar.ui.screens.OfficeDetailsScreen
 
-// Names of all screens (routes)
 object Routes {
     const val OFFICES = "offices"
     const val DETAILS = "details/{officeId}"
@@ -27,7 +26,6 @@ object Routes {
 fun RateRadarNavGraph() {
     val navController = rememberNavController()
 
-    // Ids of favorite offices. It lives here, above all screens, so every screen sees the same set.
     var favoriteIds by remember { mutableStateOf(setOf<Int>()) }
 
     fun toggleFavorite(officeId: Int) {
@@ -53,7 +51,6 @@ fun RateRadarNavGraph() {
             route = Routes.DETAILS,
             arguments = listOf(navArgument("officeId") { type = NavType.IntType }),
         ) { backStackEntry ->
-            // Read the id from the route, for example "details/3" -> 3
             val officeId = backStackEntry.arguments?.getInt("officeId") ?: 0
             OfficeDetailsScreen(
                 officeId = officeId,

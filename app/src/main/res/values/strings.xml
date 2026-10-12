@@ -19,7 +19,7 @@
     <string name="city_and_time">%1$s · updated %2$s</string>
 
     <!-- Details -->
-    <string name="office_image_description">Photo of the %1$s exchange office</string>
+    <string name="office_image_description">Illustration of the %1$s exchange office</string>
     <string name="label_city">City: %1$s</string>
     <string name="label_address">Address: %1$s</string>
     <string name="label_hours">Working hours: %1$s</string>

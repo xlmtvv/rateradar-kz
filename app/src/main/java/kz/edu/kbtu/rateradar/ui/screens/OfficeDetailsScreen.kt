@@ -49,7 +49,6 @@ fun OfficeDetailsScreen(
     onBackClick: () -> Unit,
     onFavoriteClick: (Int) -> Unit,
 ) {
-    // Find the office by the id that came from navigation
     val office = SampleData.offices.find { it.id == officeId }
 
     Scaffold(

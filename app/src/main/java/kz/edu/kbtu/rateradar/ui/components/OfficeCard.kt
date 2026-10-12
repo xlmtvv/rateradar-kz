@@ -26,7 +26,6 @@ import kz.edu.kbtu.rateradar.model.ExchangeOffice
 import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.ui.theme.Spacing
 
-// One exchange office in a list. Used on the main screen and on Favorites.
 @Composable
 fun OfficeCard(
     office: ExchangeOffice,
@@ -67,7 +66,6 @@ fun OfficeCard(
                     RateBlock(label = stringResource(R.string.sell), rate = office.usdSell)
                 }
             }
-            // IconButton is 48 dp by default, so it is easy to tap
             IconButton(onClick = onFavoriteClick) {
                 if (isFavorite) {
                     Icon(

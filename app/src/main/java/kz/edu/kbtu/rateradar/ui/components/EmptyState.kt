@@ -22,7 +22,6 @@ import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.ui.theme.Sizes
 import kz.edu.kbtu.rateradar.ui.theme.Spacing
 
-// Friendly message that we show instead of an empty screen
 @Composable
 fun EmptyState(
     icon: ImageVector,
@@ -35,18 +34,23 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+
         Icon(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier.size(Sizes.emptyStateIcon),
             tint = MaterialTheme.colorScheme.primary,
         )
+
         Text(
             text = title,
             modifier = Modifier.padding(top = Spacing.large),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
         )
+
+
+
         Text(
             text = message,
             modifier = Modifier.padding(top = Spacing.medium),
