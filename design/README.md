@@ -12,3 +12,7 @@ Each box is labeled with the Compose element that will build it.
 Color legend: red = Scaffold, blue = TopAppBar / buttons / text,
 green = layout containers (Column, Row, LazyColumn, LazyRow, Box),
 purple = Card / Image, orange = RateBlock component.
+
+## SIS4 architecture
+
+The MVVM diagram, UiState fields, events and click trace are in [SIS4_Architecture.md](SIS4_Architecture.md). The plan was committed before refactoring.

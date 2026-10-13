@@ -1,151 +1,132 @@
 # RateRadar KZ
 
-RateRadar KZ is an Android application concept for tracking currency rates and comparing buy and sell offers from exchange offices in Kazakhstan. This repository contains the course work: the project idea (SIS1), Kotlin problems (SIS2) and the app screens built with Jetpack Compose (SIS3).
+An Android app for browsing exchange offices in Kazakhstan and comparing their demo USD buy/sell rates. SIS4 refactors the three SIS3 screens to MVVM with StateFlow. Data is local; there is no live currency API or database.
 
-## Planned functionality (SIS1)
+## Screens
 
-- Users can choose a base and target currency from supported ISO currency codes.
-- Users can enter an amount and calculate its converted value using the latest available rate.
-- Users can browse exchange-office offers with buy rates, sell rates, and update times.
-- Users can compare and sort offers by the best rate or resulting transaction amount.
-- Users can filter offers by city, currency, and transaction type (buy or sell).
-- Users can open an exchange-office detail screen with its address, contacts, and working hours.
-- Users can add or remove favorite currencies and exchange offices, with selections retained after restart.
-- Users can refresh data and see clear loading, empty, offline/cached, and error states.
+- **Exchange Offices:** twelve offices, search by name/city/address, city chips and favorite hearts.
+- **Office Details:** image, address, working hours and rates, with an add/remove favorite button.
+- **Favorites:** the saved offices or an empty message. Search and city selection on the main screen do not hide favorites here.
 
-## SIS3 — App screens in Jetpack Compose
+All three screens support loading, content, empty and error states. Every screen has four state previews, plus a dark content preview. The existing light/dark theme, spacing and reusable cards are kept.
 
-A demo version of RateRadar KZ with three screens. All data is local demo data
-(12 exchange offices written in `SampleData.kt`), there is no internet or database.
+## Architecture - SIS4
 
-### Screens
+![MVVM architecture](design/04_mvvm_architecture.png)
 
-1. **Exchange Offices** (start screen) — list of 12 offices in a `LazyColumn`,
-   city filter chips in a `LazyRow`, a heart button on every card to add the office to favorites.
-2. **Office Details** — opened by tapping a card. Shows an image, name, city, address,
-   working hours, buy/sell rates and a button to add/remove the office from favorites.
-3. **Favorites** — opened with the heart in the top bar. Shows only favorite offices,
-   or a friendly empty state when there are none.
+The [plan](design/SIS4_Architecture.md) was committed before the refactor. It lists the UiState fields, events and responsibilities.
 
-### Screenshots
+- `ExchangeOfficeRepository` owns the records and cities. `loadOffices()` uses `delay(1000)` and can simulate one failed request.
+- `RateRadarViewModel` owns the search, city, favorite IDs, selected office and loading/error status. It filters and finds records and updates the private `MutableStateFlow` with `copy()`. Screens get a public read-only `StateFlow`.
+- The ViewModel is created above `NavHost`, so its owner is the Activity and all three destinations share it.
+- `ExchangeOfficeListRoute`, `OfficeDetailsRoute` and `FavoritesRoute` collect state with `collectAsStateWithLifecycle()` and connect event callbacks.
+- Screen functions take `RateRadarUiState` and lambdas. They do not receive a ViewModel, load records or filter the source list.
 
-| Screen | Light | Dark |
-|---|---|---|
-| Exchange Offices | <img src="screenshots/list_light.png" width="220"> | <img src="screenshots/list_dark.png" width="220"> |
-| Office Details | <img src="screenshots/details_light.png" width="220"> | <img src="screenshots/details_dark.png" width="220"> |
-| Favorites | <img src="screenshots/favorites_light.png" width="220"> | <img src="screenshots/favorites_dark.png" width="220"> |
-| Favorites (empty) | <img src="screenshots/favorites_empty_light.png" width="220"> | <img src="screenshots/favorites_empty_dark.png" width="220"> |
-| Filter with no results | <img src="screenshots/filter_empty_light.png" width="220"> | <img src="screenshots/filter_empty_dark.png" width="220"> |
+The handled events are `onSearchChange`, `onCitySelected`, `onFavoriteClick`, `onOfficeSelected` and `onRetry`. Important state stays in the ViewModel; `rememberScrollState` in Details only controls scrolling.
 
-### Sketch vs. app
+### Trace one click
 
-The labeled sketches are in [design/](design/README.md). The app follows them, with a few small changes:
+A heart in `OfficeCard` calls `onFavoriteClick(office.id)`. The callback in `ExchangeOfficeListRoute` calls `RateRadarViewModel.onFavoriteClick`. The ViewModel toggles the ID and calls `updatedState`, which computes the favorite records and updates `RateRadarUiState` with `copy()`. The Route receives the new StateFlow value, and the list heart, details button and Favorites screen display the same selection.
 
-- The favorite button is a **heart** instead of a star, because `Favorite` / `FavoriteBorder`
-  icons are already in the core icon set (no extra library needed).
-- A fifth city chip, **Karaganda**, was added. It has no offices, so it shows the
-  "No offices here" empty state.
-- On the details screen the button changes to an outlined **"Remove from favorites"**
-  button when the office is already a favorite.
+Tapping a card also calls `onOfficeSelected(id)`, then `RateRadarNavGraph` navigates to `details/id`. `OfficeDetailsRoute` forwards the navigation argument to the ViewModel; the screen receives the resolved record. Back uses `popBackStack()`.
 
-### How the code is organized
+### Rotation proof
+
+The following is actual Logcat output from the emulator, after entering `Baiterek`, choosing `Astana`, marking the office as a favorite and rotating to landscape:
 
 ```text
-app/src/main/java/kz/edu/kbtu/rateradar/
-├── MainActivity.kt                 # entry point, sets the theme and the nav graph
-├── model/ExchangeOffice.kt         # data class
-├── data/SampleData.kt              # list of 12 offices and the list of cities
-├── navigation/RateRadarNavGraph.kt # NavHost, routes, favorites state
-└── ui/
-    ├── components/                 # reusable composables
-    │   ├── OfficeCard.kt           # used on Exchange Offices and Favorites
-    │   ├── RateBlock.kt            # used in OfficeCard and on Office Details
-    │   └── EmptyState.kt           # used on Favorites, the filter result and Details (not found)
-    ├── screens/
-    │   ├── ExchangeOfficeListScreen.kt
-    │   ├── OfficeDetailsScreen.kt
-    │   └── FavoritesScreen.kt
-    └── theme/
-        ├── Color.kt                # the only place with color values
-        ├── Theme.kt                # light and dark color schemes
-        ├── Type.kt                 # typography
-        └── Dimens.kt               # Spacing (4, 8, 16, 24 dp) and fixed sizes
+--------- beginning of main
+D/RateRadarActivity( 7481): onCreate instance=140053151
+D/RateRadarActivity( 7481): onStart instance=140053151
+D/RateRadarActivity( 7481): onResume instance=140053151
+D/RateRadarViewModel( 7481): init instance=96018520
+D/RateRadarActivity( 7481): onPause instance=140053151
+D/RateRadarActivity( 7481): onStop instance=140053151
+D/RateRadarActivity( 7481): onDestroy instance=140053151
+D/RateRadarActivity( 7481): onCreate instance=229300425
+D/RateRadarActivity( 7481): onStart instance=229300425
+D/RateRadarActivity( 7481): onResume instance=229300425
 ```
 
-### SIS3 requirements
+Android created a new Activity for the changed configuration, which is visible in the different instance numbers. The ViewModel was created once and was retained by the Activity's ViewModelStore during this change. The new screen collected its existing state, so the search text, selected city and favorite heart stayed the same. A fresh app process creates a new ViewModel; this refactor does not add permanent storage.
 
-- 3 screens, each with `Scaffold` + `TopAppBar`; Details and Favorites have a back button.
-- `LazyColumn` with 12 items, `LazyRow` with city `FilterChip`s.
-- Long office names are cut with `maxLines = 1` and `TextOverflow.Ellipsis`.
-- Empty states: no favorites, no offices in the selected city, office not found.
-- `Image` from `res/drawable/exchange_placeholder.xml` with a `contentDescription`.
-- Custom light and dark color schemes; screens only use `MaterialTheme.colorScheme`
-  and `MaterialTheme.typography`; all texts are in `strings.xml`.
-- Spacing only from the `Spacing` object; icon buttons are 48 dp, the details button has `heightIn(min = 48.dp)`.
-- 3 reusable components, each used in more than one place, with `@Preview`s (light and dark).
-  Every screen has a light and a dark preview.
-- Navigation Compose: `details/{officeId}` route with an `Int` argument; the details screen finds the office by this id.
-- State: `remember { mutableStateOf(setOf<Int>()) }` for favorites and
-  `rememberSaveable { mutableStateOf(...) }` for the selected city.
+The details destination was rotated separately and kept the same office and favorite status. `MainActivity` logs all six lifecycle callbacks; `RateRadarViewModel` logs `init` and `onCleared`.
 
-Technologies: Kotlin, Jetpack Compose, Material 3, Navigation Compose.
+### State screenshots
 
-AI usage is described in [AI_USAGE.md](AI_USAGE.md).
+| Main screen state | Screenshot |
+|---|---|
+| Loading | <img src="screenshots/sis4/loading.png" width="220"> |
+| Content | <img src="screenshots/sis4/list_content.png" width="220"> |
+| Empty | <img src="screenshots/sis4/list_empty.png" width="220"> |
+| Error | <img src="screenshots/sis4/error.png" width="220"> |
+
+| Other checks | Screenshot |
+|---|---|
+| Rotation keeps search, city and favorite | <img src="screenshots/sis4/rotated_list.png" width="440"> |
+| Details | <img src="screenshots/sis4/details_content.png" width="220"> |
+| Favorites | <img src="screenshots/sis4/favorites_content.png" width="220"> |
+| List, dark | <img src="screenshots/sis4/list_content_dark.png" width="220"> |
+| Details, dark | <img src="screenshots/sis4/details_dark.png" width="220"> |
+| Favorites, dark | <img src="screenshots/sis4/favorites_dark.png" width="220"> |
+
+## Build and run
+
+Open this folder in Android Studio, let Gradle sync, select an emulator and run `app`.
+
+The project compiles with Android SDK 36, targets API 36 and supports API 24+. Use the Android Studio bundled JDK or another compatible JDK; project bytecode targets Java 17.
+
+```bash
+./gradlew assembleDebug
+./gradlew testDebugUnitTest lintDebug
+```
+
+### Demonstrate error and Retry
+
+Build and install a version with a simulated initial failure:
+
+```bash
+./gradlew installDebug -PsimulateLoadError=true
+```
+
+Open the app in a fresh process. The repository waits, then shows an error with a Retry button. The flag causes one failure per repository instance, so Retry waits again and succeeds. Query and city changes made before Retry are retained.
+
+For the normal version:
+
+```bash
+./gradlew installDebug
+```
+
+The flag defaults to false. To repeat the failure demonstration, force-stop and reopen the error-enabled build. The flag is a build setting, not a new user-facing feature.
+
+## Checks
+
+Coroutine tests cover the delayed repository, content after loading, combined search/city filtering, empty results, shared favorites and details, invalid IDs, error recovery and preserving state across reloads. The existing arithmetic test is also kept. Emulator checks cover rotation, navigation/back, favorites removal, empty results, dark theme and a simulated failure with Retry.
 
 ## Project structure
 
 ```text
-RateRadarKZ/
-├── app/
-│   ├── src/main/
-│   │   ├── java/kz/edu/kbtu/rateradar/
-│   │   │   ├── MainActivity.kt
-│   │   │   ├── model/ data/ navigation/
-│   │   │   └── ui/components/ ui/screens/ ui/theme/
-│   │   ├── res/
-│   │   └── AndroidManifest.xml
-│   ├── src/test/
-│   └── build.gradle.kts
-├── design/                    # SIS3: labeled screen sketches
-├── screenshots/               # SIS3: light and dark screenshots
-├── docs/
-│   └── SIS1_Project_Description.md
-├── output/pdf/
-│   └── RateRadar_KZ_SIS1.pdf
-├── sis2/                      # SIS2: LeetCode problems in Kotlin
-│   ├── 01_TwoSum.kt
-│   ├── 14_LongestCommonPrefix.kt
-│   ├── 20_ValidParentheses.kt
-│   ├── 21_MergeTwoSortedLists.kt
-│   ├── 242_ValidAnagram.kt
-│   └── README.md
-├── gradle/wrapper/
-├── .gitignore
-├── build.gradle.kts
-├── gradle.properties
-├── settings.gradle.kts
-├── gradlew
-└── gradlew.bat
+app/src/main/java/kz/edu/kbtu/rateradar/
+├── MainActivity.kt
+├── model/ExchangeOffice.kt
+├── data/ExchangeOfficeRepository.kt
+├── viewmodel/
+│   ├── RateRadarUiState.kt
+│   └── RateRadarViewModel.kt
+├── navigation/
+│   ├── RateRadarNavGraph.kt
+│   └── RateRadarRoutes.kt
+└── ui/
+    ├── screens/       # uiState and event callbacks
+    ├── components/    # cards, rates, empty/loading/error displays
+    ├── preview/       # fake data only for previews
+    └── theme/         # colors, typography and shared dimensions
 ```
 
-## Build and run
+`design/` contains the SIS3 screen sketches and SIS4 architecture plan. `screenshots/` contains emulator captures. SIS1 idea and planned functionality are in [docs/SIS1_Project_Description.md](docs/SIS1_Project_Description.md); SIS2 Kotlin tasks are in [sis2/](sis2/README.md).
 
-1. Open this folder in Android Studio.
-2. Let Gradle finish syncing and select an emulator or connected Android device.
-3. Click **Run app**.
+## Sketch to app
 
-From the terminal, use:
+The original screen sketches remain in [design/](design/README.md). SIS3 changed the sketch's star into a heart, added an empty Karaganda filter and used an outlined remove-favorite button on Details. SIS4 adds a search field and loading/error content inside the same screen scaffolds. Favorites uses `EmptyState` with a centered Column rather than the Box shown in its original sketch.
 
-```bash
-./gradlew assembleDebug
-```
-
-The project uses JDK 17 bytecode, Android SDK 36, and requires Android 7.0 (API 24) or newer.
-
-## Documentation
-
-The SIS1 project idea, navigation flow chart, and functionality list are in [docs/SIS1_Project_Description.md](docs/SIS1_Project_Description.md).
-
-## SIS2 — Kotlin problems
-
-Five Easy LeetCode problems solved in idiomatic Kotlin, one file per problem, with a short description of each approach: [sis2/](sis2/README.md).
+AI assistance is documented in [AI_USAGE.md](AI_USAGE.md).
