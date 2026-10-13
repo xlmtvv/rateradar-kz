@@ -17,86 +17,87 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import kz.edu.kbtu.rateradar.R
-import kz.edu.kbtu.rateradar.data.SampleData
 import kz.edu.kbtu.rateradar.ui.components.EmptyState
+import kz.edu.kbtu.rateradar.ui.components.LoadErrorState
+import kz.edu.kbtu.rateradar.ui.components.LoadingState
 import kz.edu.kbtu.rateradar.ui.components.OfficeCard
+import kz.edu.kbtu.rateradar.ui.preview.PreviewData
 import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.ui.theme.Spacing
+import kz.edu.kbtu.rateradar.viewmodel.RateRadarUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExchangeOfficeListScreen(
-    favoriteIds: Set<Int>,
+    uiState: RateRadarUiState,
+    onSearchChange: (String) -> Unit,
+    onCitySelected: (String) -> Unit,
     onOfficeClick: (Int) -> Unit,
     onFavoriteClick: (Int) -> Unit,
     onOpenFavorites: () -> Unit,
+    onRetry: () -> Unit,
 ) {
-    var selectedCity by rememberSaveable { mutableStateOf(SampleData.ALL_CITIES) }
-
-    val offices = if (selectedCity == SampleData.ALL_CITIES) {
-        SampleData.offices
-    } else {
-        SampleData.offices.filter { it.city == selectedCity }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.title_offices)) },
                 actions = {
                     IconButton(onClick = onOpenFavorites) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = stringResource(R.string.open_favorites),
-                        )
+                        Icon(Icons.Filled.Favorite, contentDescription = stringResource(R.string.open_favorites))
                     }
                 },
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            // Horizontal list of city filters
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            OutlinedTextField(
+                value = uiState.searchQuery,
+                onValueChange = onSearchChange,
+                label = { Text(stringResource(R.string.search_offices)) },
+                singleLine = true,
+                enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.large, vertical = Spacing.medium),
+            )
             LazyRow(
                 contentPadding = PaddingValues(horizontal = Spacing.large),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
             ) {
-                items(SampleData.cities) { city ->
+                items(uiState.cities) { city ->
                     FilterChip(
-                        selected = city == selectedCity,
-                        onClick = { selectedCity = city },
+                        selected = city == uiState.selectedCity,
+                        onClick = { onCitySelected(city) },
                         label = { Text(city) },
+                        enabled = !uiState.isLoading,
                     )
                 }
             }
-
-            if (offices.isEmpty()) {
-                EmptyState(
+            when {
+                uiState.isLoading -> LoadingState(modifier = Modifier.weight(1f))
+                uiState.error != null -> LoadErrorState(uiState.error, onRetry, modifier = Modifier.weight(1f))
+                uiState.offices.isEmpty() -> EmptyState(
                     icon = Icons.Outlined.LocationOn,
                     title = stringResource(R.string.empty_city_title),
                     message = stringResource(R.string.empty_city_message),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
-            } else {
-                LazyColumn(
+                else -> LazyColumn(
+                    modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(Spacing.large),
                     verticalArrangement = Arrangement.spacedBy(Spacing.medium),
                 ) {
-                    items(offices, key = { it.id }) { office ->
+                    items(uiState.offices, key = { it.id }) { office ->
                         OfficeCard(
                             office = office,
-                            isFavorite = office.id in favoriteIds,
+                            isFavorite = office.id in uiState.favoriteIds,
                             onClick = { onOfficeClick(office.id) },
                             onFavoriteClick = { onFavoriteClick(office.id) },
                             modifier = Modifier.fillMaxWidth(),
@@ -108,28 +109,35 @@ fun ExchangeOfficeListScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Content", showBackground = true)
+@Preview(name = "Content dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun ExchangeOfficeListScreenPreview() {
+private fun ExchangeOfficeListContentPreview() {
     RateRadarTheme {
-        ExchangeOfficeListScreen(
-            favoriteIds = setOf(1, 3),
-            onOfficeClick = {},
-            onFavoriteClick = {},
-            onOpenFavorites = {},
-        )
+        ExchangeOfficeListScreen(PreviewData.content, {}, {}, {}, {}, {}, {})
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "Loading", showBackground = true)
 @Composable
-private fun ExchangeOfficeListScreenDarkPreview() {
+private fun ExchangeOfficeListLoadingPreview() {
     RateRadarTheme {
-        ExchangeOfficeListScreen(
-            favoriteIds = setOf(2),
-            onOfficeClick = {},
-            onFavoriteClick = {},
-            onOpenFavorites = {},
-        )
+        ExchangeOfficeListScreen(PreviewData.loading, {}, {}, {}, {}, {}, {})
+    }
+}
+
+@Preview(name = "Empty", showBackground = true)
+@Composable
+private fun ExchangeOfficeListEmptyPreview() {
+    RateRadarTheme {
+        ExchangeOfficeListScreen(PreviewData.empty, {}, {}, {}, {}, {}, {})
+    }
+}
+
+@Preview(name = "Error", showBackground = true)
+@Composable
+private fun ExchangeOfficeListErrorPreview() {
+    RateRadarTheme {
+        ExchangeOfficeListScreen(PreviewData.error, {}, {}, {}, {}, {}, {})
     }
 }

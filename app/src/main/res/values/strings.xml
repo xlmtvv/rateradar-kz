@@ -27,8 +27,12 @@
     <!-- Empty states -->
     <string name="empty_favorites_title">No favorites yet</string>
     <string name="empty_favorites_message">Tap the heart on an office to save it here.</string>
-    <string name="empty_city_title">No offices here</string>
-    <string name="empty_city_message">There are no exchange offices in this city yet. Try another city.</string>
+    <string name="empty_city_title">No offices found</string>
+    <string name="empty_city_message">No exchange offices match your search and city. Try another search or city.</string>
     <string name="office_not_found_title">Office not found</string>
     <string name="office_not_found_message">This exchange office does not exist.</string>
+    <string name="search_offices">Search offices</string>
+    <string name="loading_offices">Loading offices…</string>
+    <string name="load_error_title">Could not load offices</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import kz.edu.kbtu.rateradar.R
-import kz.edu.kbtu.rateradar.data.SampleData
+import kz.edu.kbtu.rateradar.ui.preview.PreviewData
 import kz.edu.kbtu.rateradar.model.ExchangeOffice
 import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.ui.theme.Spacing
@@ -90,7 +90,7 @@ fun OfficeCard(
 private fun OfficeCardPreview() {
     RateRadarTheme {
         OfficeCard(
-            office = SampleData.offices[0],
+            office = PreviewData.office,
             isFavorite = true,
             onClick = {},
             onFavoriteClick = {},
@@ -103,7 +103,7 @@ private fun OfficeCardPreview() {
 private fun OfficeCardLongNameDarkPreview() {
     RateRadarTheme {
         OfficeCard(
-            office = SampleData.offices[2],
+            office = PreviewData.longOffice,
             isFavorite = false,
             onClick = {},
             onFavoriteClick = {},
