@@ -17,6 +17,10 @@
     <string name="sell">Sell USD</string>
     <string name="rate_value">%1$.2f ₸</string>
     <string name="city_and_time">%1$s · updated %2$s</string>
+    <string name="reference_rate_title">Reference exchange rate</string>
+    <string name="reference_rate_value">1 %1$s = %2$.2f %3$s</string>
+    <string name="reference_rate_date">Rate date: %1$s</string>
+    <string name="reference_rate_source">Source: Frankfurter. Exchange offices set their own buy/sell prices.</string>
 
     <!-- Details -->
     <string name="office_image_description">Illustration of the %1$s exchange office</string>
@@ -32,7 +36,7 @@
     <string name="office_not_found_title">Office not found</string>
     <string name="office_not_found_message">This exchange office does not exist.</string>
     <string name="search_offices">Search offices</string>
-    <string name="loading_offices">Loading offices…</string>
-    <string name="load_error_title">Could not load offices</string>
+    <string name="loading_offices">Loading data…</string>
+    <string name="load_error_title">Could not load data</string>
     <string name="retry">Retry</string>
 </resources>

@@ -1,4 +1,4 @@
-# AI usage - SIS3 and SIS4
+# AI usage - SIS3, SIS4 and Practice 8
 
 ## Tools and tasks
 
@@ -38,3 +38,9 @@ A request for this work was:
 The AI-assisted SIS3 version filtered offices in `ExchangeOfficeListScreen`, filtered favorites in `FavoritesScreen`, and looked up a details record in `OfficeDetailsScreen`. For MVVM, these data operations belonged outside the composables. They were moved to `RateRadarViewModel.updatedState`, which prepares `offices`, `favoriteOffices` and `selectedOffice`. Screens now receive a `RateRadarUiState` and event callbacks; Routes collect the StateFlow and forward actions.
 
 The review also checked that the ViewModel was created above the NavHost, so all destinations use the same Activity-scoped instance. Rotation logs and emulator checks are recorded in the README. Code, tests and these documentation updates received AI assistance.
+
+## Practice 8: REST API
+
+Codex assisted with connecting the existing Office Details screen to Frankfurter using Retrofit, Gson and coroutines. The endpoint was checked in a browser first. A real USD/KZT reference rate replaces the hardcoded Buy/Sell blocks on Details; other office demo data remains unchanged. The work includes separate connection and HTTP error handling, unit tests, and an explanation of the changes for study.
+
+Verification included ten ViewModel unit tests, a debug build/install, Android Lint, and an emulator check of real data, a fresh launch in airplane mode, and Retry after reconnecting. The emulator network settings were restored after the check.

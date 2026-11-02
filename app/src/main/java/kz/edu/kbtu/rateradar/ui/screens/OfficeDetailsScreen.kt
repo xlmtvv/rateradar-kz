@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,7 +38,6 @@ import kz.edu.kbtu.rateradar.ui.preview.PreviewData
 import kz.edu.kbtu.rateradar.ui.components.LoadingState
 import kz.edu.kbtu.rateradar.ui.components.LoadErrorState
 import kz.edu.kbtu.rateradar.ui.components.EmptyState
-import kz.edu.kbtu.rateradar.ui.components.RateBlock
 import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.ui.theme.Sizes
 import kz.edu.kbtu.rateradar.ui.theme.Spacing
@@ -133,17 +131,30 @@ fun OfficeDetailsScreen(
                         }
                     }
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.medium)) {
-                        RateBlock(
-                            label = stringResource(R.string.buy),
-                            rate = office.usdBuy,
-                            modifier = Modifier.weight(1f),
-                        )
-                        RateBlock(
-                            label = stringResource(R.string.sell),
-                            rate = office.usdSell,
-                            modifier = Modifier.weight(1f),
-                        )
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier.padding(Spacing.large),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.small),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.reference_rate_title),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            uiState.exchangeRates.forEach { rate ->
+                                Text(
+                                    text = stringResource(R.string.reference_rate_value, rate.base, rate.rate, rate.quote),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                )
+                                Text(
+                                    text = stringResource(R.string.reference_rate_date, rate.date),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            Text(
+                                text = stringResource(R.string.reference_rate_source),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
                     }
 
                     val buttonModifier = Modifier

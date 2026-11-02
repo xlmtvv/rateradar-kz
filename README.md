@@ -1,14 +1,37 @@
 # RateRadar KZ
 
-An Android app for browsing exchange offices in Kazakhstan and comparing their demo USD buy/sell rates. SIS4 refactors the three SIS3 screens to MVVM with StateFlow. Data is local; there is no live currency API or database.
+An Android app for browsing demo exchange offices in Kazakhstan. SIS4 refactored the three screens to MVVM with StateFlow. Practice 8 connects Office Details to the Frankfurter REST API for a real USD/KZT reference rate. Office records and buy/sell prices in the list and Favorites remain local demo data. There is no database.
 
 ## Screens
 
 - **Exchange Offices:** twelve offices, search by name/city/address, city chips and favorite hearts.
-- **Office Details:** image, address, working hours and rates, with an add/remove favorite button.
+- **Office Details:** image, address, working hours and a real USD/KZT reference rate with its date and source, with an add/remove favorite button.
 - **Favorites:** the saved offices or an empty message. Search and city selection on the main screen do not hide favorites here.
 
 All three screens support loading, content, empty and error states. Every screen has four state previews, plus a dark content preview. The existing light/dark theme, spacing and reusable cards are kept.
+
+## Practice 8 - REST API
+
+The endpoint was opened in a browser before implementation:
+
+https://api.frankfurter.dev/v2/rates?base=USD&quotes=KZT
+
+It returns a JSON list with `date`, `base`, `quote` and `rate`. `ExchangeRate` has the same field names. `ApiService.getRates()` is one suspend GET request. `RetrofitClient` uses `https://api.frankfurter.dev/` and `GsonConverterFactory`; no API key is needed.
+
+`RateRadarViewModel.onRetry()` calls the API inside `viewModelScope.launch` and puts the result in `uiState.exchangeRates`. Office Details displays it instead of its former hardcoded Buy/Sell blocks. This is a reference rate, not an individual exchange office's offer. Activity and composables do not make network requests.
+
+While loading, the existing loading indicator is shown. `IOException` produces a connection message; `HttpException` produces a different message with the HTTP status code. The existing Retry button makes another request.
+
+To demonstrate the practice:
+
+1. Run the normal debug build, open an office and show the reference rate and date.
+2. On the emulator, enable airplane mode and make sure Wi-Fi is off too.
+3. Force-stop and reopen the app. It should show the connection error instead of crashing.
+4. Disable airplane mode, reconnect and tap Retry. Open an office to see the rate again.
+
+Verified on the Android 16 / API 36 emulator: the real API rate appeared on Details, a fresh launch in airplane mode with Wi-Fi off showed the connection error without a crash, and Retry succeeded after restoring connectivity. The emulator's original network settings were restored.
+
+Screenshots: [real API rate](screenshots/practice8/details_api.png), [airplane-mode error](screenshots/practice8/airplane_error.png).
 
 ## Architecture - SIS4
 
@@ -17,7 +40,7 @@ All three screens support loading, content, empty and error states. Every screen
 The [plan](design/SIS4_Architecture.md) was committed before the refactor. It lists the UiState fields, events and responsibilities.
 
 - `ExchangeOfficeRepository` owns the records and cities. `loadOffices()` uses `delay(1000)` and can simulate one failed request.
-- `RateRadarViewModel` owns the search, city, favorite IDs, selected office and loading/error status. It filters and finds records and updates the private `MutableStateFlow` with `copy()`. Screens get a public read-only `StateFlow`.
+- `RateRadarViewModel` owns the search, city, favorite IDs, selected office and loading/error status. Practice 8 also loads the reference rate here. It filters and finds records and updates the private `MutableStateFlow` with `copy()`. Screens get a public read-only `StateFlow`.
 - The ViewModel is created above `NavHost`, so its owner is the Activity and all three destinations share it.
 - `ExchangeOfficeListRoute`, `OfficeDetailsRoute` and `FavoritesRoute` collect state with `collectAsStateWithLifecycle()` and connect event callbacks.
 - Screen functions take `RateRadarUiState` and lambdas. They do not receive a ViewModel, load records or filter the source list.
@@ -81,7 +104,7 @@ The project compiles with Android SDK 36, targets API 36 and supports API 24+. U
 ./gradlew testDebugUnitTest lintDebug
 ```
 
-### Demonstrate error and Retry
+### SIS4: demonstrate the simulated repository error
 
 Build and install a version with a simulated initial failure:
 
@@ -101,15 +124,20 @@ The flag defaults to false. To repeat the failure demonstration, force-stop and 
 
 ## Checks
 
-Coroutine tests cover the delayed repository, content after loading, combined search/city filtering, empty results, shared favorites and details, invalid IDs, error recovery and preserving state across reloads. The existing arithmetic test is also kept. Emulator checks cover rotation, navigation/back, favorites removal, empty results, dark theme and a simulated failure with Retry.
+Coroutine tests cover the delayed repository, content after loading, combined search/city filtering, empty results, shared favorites and details, invalid IDs, error recovery and preserving state across reloads. Practice 8 adds checks for rates returned by the API, connection failure with Retry, and a separate HTTP error message. Unit tests use a fake ApiService so they do not depend on the internet. The existing arithmetic test is also kept. SIS4 emulator checks are documented above.
 
 ## Project structure
 
 ```text
 app/src/main/java/kz/edu/kbtu/rateradar/
 ├── MainActivity.kt
-├── model/ExchangeOffice.kt
-├── data/ExchangeOfficeRepository.kt
+├── model/
+│   ├── ExchangeOffice.kt
+│   └── ExchangeRate.kt
+├── data/
+│   ├── ExchangeOfficeRepository.kt
+│   ├── ApiService.kt
+│   └── RetrofitClient.kt
 ├── viewmodel/
 │   ├── RateRadarUiState.kt
 │   └── RateRadarViewModel.kt

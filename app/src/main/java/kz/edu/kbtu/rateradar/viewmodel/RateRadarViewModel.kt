@@ -14,10 +14,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kz.edu.kbtu.rateradar.BuildConfig
+import kz.edu.kbtu.rateradar.data.ApiService
 import kz.edu.kbtu.rateradar.data.ExchangeOfficeRepository
+import kz.edu.kbtu.rateradar.data.RetrofitClient
 import kz.edu.kbtu.rateradar.model.ExchangeOffice
+import retrofit2.HttpException
 
-class RateRadarViewModel(private val repository: ExchangeOfficeRepository) : ViewModel() {
+class RateRadarViewModel(
+    private val repository: ExchangeOfficeRepository,
+    private val apiService: ApiService,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(RateRadarUiState(cities = repository.cities))
     val uiState: StateFlow<RateRadarUiState> = _uiState.asStateFlow()
 
@@ -56,9 +62,18 @@ class RateRadarViewModel(private val repository: ExchangeOfficeRepository) : Vie
         loadJob = viewModelScope.launch {
             try {
                 allOffices = repository.loadOffices()
-                _uiState.update { state -> updatedState(state.copy(isLoading = false, error = null)) }
+                val rates = apiService.getRates()
+                _uiState.update { state ->
+                    updatedState(state.copy(exchangeRates = rates, isLoading = false, error = null))
+                }
             } catch (exception: IOException) {
-                _uiState.update { it.copy(isLoading = false, error = exception.message) }
+                _uiState.update {
+                    it.copy(isLoading = false, error = "Cannot connect. Check your internet connection and try again.")
+                }
+            } catch (exception: HttpException) {
+                _uiState.update {
+                    it.copy(isLoading = false, error = "Server error (HTTP ${exception.code()}). Please try again.")
+                }
             }
         }
     }
@@ -88,7 +103,10 @@ class RateRadarViewModel(private val repository: ExchangeOfficeRepository) : Vie
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                RateRadarViewModel(ExchangeOfficeRepository(shouldFail = BuildConfig.SIMULATE_LOAD_ERROR))
+                RateRadarViewModel(
+                    ExchangeOfficeRepository(shouldFail = BuildConfig.SIMULATE_LOAD_ERROR),
+                    RetrofitClient.apiService,
+                )
             }
         }
     }
