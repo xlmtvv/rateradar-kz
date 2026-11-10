@@ -16,7 +16,7 @@ The endpoint was opened in a browser before implementation:
 
 https://api.frankfurter.dev/v2/rates?base=USD&quotes=KZT
 
-It returns a JSON list with `date`, `base`, `quote` and `rate`. `ExchangeRate` has the same field names. `ApiService.getRates()` is one suspend GET request. `RetrofitClient` uses `https://api.frankfurter.dev/` and `GsonConverterFactory`; no API key is needed.
+It returns a JSON list with `date`, `base`, `quote` and `rate`. `ExchangeRateDto` matches these JSON fields; the existing ViewModel copies them into the app's `ExchangeRate` model. `ApiService.getRates()` is one suspend GET request. `RetrofitClient` uses `https://api.frankfurter.dev/` and `GsonConverterFactory`; no API key is needed.
 
 `RateRadarViewModel.onRetry()` calls the API inside `viewModelScope.launch` and puts the result in `uiState.exchangeRates`. Office Details displays it instead of its former hardcoded Buy/Sell blocks. This is a reference rate, not an individual exchange office's offer. Activity and composables do not make network requests.
 
@@ -32,6 +32,18 @@ To demonstrate the practice:
 Verified on the Android 16 / API 36 emulator: the real API rate appeared on Details, a fresh launch in airplane mode with Wi-Fi off showed the connection error without a crash, and Retry succeeded after restoring connectivity. The emulator's original network settings were restored.
 
 Screenshots: [real API rate](screenshots/practice8/details_api.png), [airplane-mode error](screenshots/practice8/airplane_error.png).
+
+## SIS5 Part 1 - app skeleton
+
+- `data/remote`: the existing `ApiService` and `RetrofitClient`, plus `ExchangeRateDto` for the API response.
+- `data/repository`: the existing local `ExchangeOfficeRepository` from SIS4.
+- `domain/model`: the existing `ExchangeRate` and `ExchangeOffice` models, without Android or Retrofit dependencies.
+- `domain/repository`: the new `ExchangeRateRepository` interface declares `suspend fun getItems(): List<ExchangeRate>`.
+- `presentation`: ViewModel, screen state, screens, navigation, components, previews and theme. The new sealed `UiState` declares `Loading`, `Success(items)` and `Error(message)`.
+
+This part asks for declarations only. `ExchangeRateRepository` has no implementation yet, and the new sealed `UiState` is a skeleton for the next part. The working SIS4/Practice 8 screens continue to use `RateRadarUiState` and the existing loading code. Only a simple DTO-to-model copy was added there to keep the API result separate from the domain model. No new libraries or screens were added.
+
+After the moves, all ten ViewModel tests and the debug build passed. An Android 16 emulator launch also completed API loading and displayed the office list.
 
 ## Architecture - SIS4
 
@@ -131,24 +143,26 @@ Coroutine tests cover the delayed repository, content after loading, combined se
 ```text
 app/src/main/java/kz/edu/kbtu/rateradar/
 ├── MainActivity.kt
-├── model/
-│   ├── ExchangeOffice.kt
-│   └── ExchangeRate.kt
 ├── data/
-│   ├── ExchangeOfficeRepository.kt
-│   ├── ApiService.kt
-│   └── RetrofitClient.kt
-├── viewmodel/
-│   ├── RateRadarUiState.kt
-│   └── RateRadarViewModel.kt
-├── navigation/
-│   ├── RateRadarNavGraph.kt
-│   └── RateRadarRoutes.kt
-└── ui/
-    ├── screens/       # uiState and event callbacks
-    ├── components/    # cards, rates, empty/loading/error displays
-    ├── preview/       # fake data only for previews
-    └── theme/         # colors, typography and shared dimensions
+│   ├── remote/
+│   │   ├── ApiService.kt
+│   │   ├── ExchangeRateDto.kt
+│   │   └── RetrofitClient.kt
+│   └── repository/ExchangeOfficeRepository.kt
+├── domain/
+│   ├── model/
+│   │   ├── ExchangeOffice.kt
+│   │   └── ExchangeRate.kt
+│   └── repository/ExchangeRateRepository.kt
+└── presentation/
+    ├── UiState.kt
+    ├── RateRadarUiState.kt
+    ├── RateRadarViewModel.kt
+    ├── navigation/
+    ├── screens/
+    ├── components/
+    ├── preview/
+    └── theme/
 ```
 
 `design/` contains the SIS3 screen sketches and SIS4 architecture plan. `screenshots/` contains emulator captures. SIS1 idea and planned functionality are in [docs/SIS1_Project_Description.md](docs/SIS1_Project_Description.md); SIS2 Kotlin tasks are in [sis2/](sis2/README.md).

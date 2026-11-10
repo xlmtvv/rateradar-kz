@@ -1,4 +1,4 @@
-# AI usage - SIS3, SIS4 and Practice 8
+# AI usage - SIS3, SIS4, Practice 8 and SIS5 Part 1
 
 ## Tools and tasks
 
@@ -44,3 +44,9 @@ The review also checked that the ViewModel was created above the NavHost, so all
 Codex assisted with connecting the existing Office Details screen to Frankfurter using Retrofit, Gson and coroutines. The endpoint was checked in a browser first. A real USD/KZT reference rate replaces the hardcoded Buy/Sell blocks on Details; other office demo data remains unchanged. The work includes separate connection and HTTP error handling, unit tests, and an explanation of the changes for study.
 
 Verification included ten ViewModel unit tests, a debug build/install, Android Lint, and an emulator check of real data, a fresh launch in airplane mode, and Retry after reconnecting. The emulator network settings were restored after the check.
+
+## SIS5 Part 1: app skeleton
+
+Codex helped move the existing files into `data/remote`, `data/repository`, `domain/model` and `presentation`, and added the `domain/repository/ExchangeRateRepository` interface, `ExchangeRateDto` and a sealed `UiState` with Loading, Success and Error. The new repository has no implementation, as requested by the assignment. Existing Practice 8 loading is retained with a simple copy from DTO fields to the domain model. Imports, existing tests and the README structure were updated after the moves.
+
+Verification after the moves: ten ViewModel tests, debug assembly, and a successful emulator launch with API loading.

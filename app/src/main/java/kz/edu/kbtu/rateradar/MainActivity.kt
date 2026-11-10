@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import kz.edu.kbtu.rateradar.navigation.RateRadarNavGraph
-import kz.edu.kbtu.rateradar.ui.theme.RateRadarTheme
+import kz.edu.kbtu.rateradar.presentation.navigation.RateRadarNavGraph
+import kz.edu.kbtu.rateradar.presentation.theme.RateRadarTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
