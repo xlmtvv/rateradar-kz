@@ -1,4 +1,4 @@
-# AI usage - SIS3, SIS4, Practice 8 and SIS5 Part 1
+# AI usage - SIS3, SIS4, Practice 8, SIS5 Part 1 and localization
 
 ## Tools and tasks
 
@@ -50,3 +50,9 @@ Verification included ten ViewModel unit tests, a debug build/install, Android L
 Codex helped move the existing files into `data/remote`, `data/repository`, `domain/model` and `presentation`, and added the `domain/repository/ExchangeRateRepository` interface, `ExchangeRateDto` and a sealed `UiState` with Loading, Success and Error. The new repository has no implementation, as requested by the assignment. Existing Practice 8 loading is retained with a simple copy from DTO fields to the domain model. Imports, existing tests and the README structure were updated after the moves.
 
 Verification after the moves: ten ViewModel tests, debug assembly, and a successful emulator launch with API loading.
+
+## Localization: English, Russian and Kazakh
+
+Codex assisted with adding `values-ru` and `values-kk` string resources, a supported-languages XML file and the manifest reference. Network and HTTP errors now store a string resource ID instead of a hardcoded English message; the UI resolves it in the current language. The All filter and component previews use string resources too. Existing tests and the README were updated. Office data and the API request were not translated.
+
+Verification covered matching resource keys and format arguments, ten ViewModel tests, debug build/install, Android Lint, all three screens in each language, and offline errors while switching languages. The emulator's original language and network settings were restored after testing.

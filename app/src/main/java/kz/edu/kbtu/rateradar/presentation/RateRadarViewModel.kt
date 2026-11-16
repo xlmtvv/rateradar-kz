@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kz.edu.kbtu.rateradar.BuildConfig
+import kz.edu.kbtu.rateradar.R
 import kz.edu.kbtu.rateradar.data.remote.ApiService
 import kz.edu.kbtu.rateradar.data.repository.ExchangeOfficeRepository
 import kz.edu.kbtu.rateradar.data.remote.RetrofitClient
@@ -59,7 +60,7 @@ class RateRadarViewModel(
 
     fun onRetry() {
         if (loadJob?.isActive == true) return
-        _uiState.update { it.copy(isLoading = true, error = null) }
+        _uiState.update { it.copy(isLoading = true, error = null, httpErrorCode = null) }
         loadJob = viewModelScope.launch {
             try {
                 allOffices = repository.loadOffices()
@@ -76,11 +77,11 @@ class RateRadarViewModel(
                 }
             } catch (exception: IOException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = "Cannot connect. Check your internet connection and try again.")
+                    it.copy(isLoading = false, error = R.string.error_network)
                 }
             } catch (exception: HttpException) {
                 _uiState.update {
-                    it.copy(isLoading = false, error = "Server error (HTTP ${exception.code()}). Please try again.")
+                    it.copy(isLoading = false, error = R.string.error_server, httpErrorCode = exception.code())
                 }
             }
         }

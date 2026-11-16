@@ -75,14 +75,21 @@ fun ExchangeOfficeListScreen(
                     FilterChip(
                         selected = city == uiState.selectedCity,
                         onClick = { onCitySelected(city) },
-                        label = { Text(city) },
+                        label = {
+                            Text(if (city == "All") stringResource(R.string.all_cities) else city)
+                        },
                         enabled = !uiState.isLoading,
                     )
                 }
             }
             when {
                 uiState.isLoading -> LoadingState(modifier = Modifier.weight(1f))
-                uiState.error != null -> LoadErrorState(uiState.error, onRetry, modifier = Modifier.weight(1f))
+                uiState.error != null -> LoadErrorState(
+                    error = uiState.error,
+                    onRetry = onRetry,
+                    modifier = Modifier.weight(1f),
+                    httpErrorCode = uiState.httpErrorCode,
+                )
                 uiState.offices.isEmpty() -> EmptyState(
                     icon = Icons.Outlined.LocationOn,
                     title = stringResource(R.string.empty_city_title),

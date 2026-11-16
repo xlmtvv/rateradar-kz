@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RateRadar KZ</string>
+    <string name="app_name" translatable="false">RateRadar KZ</string>
 
     <!-- Screen titles -->
     <string name="title_offices">Exchange Offices</string>
@@ -36,7 +36,10 @@
     <string name="office_not_found_title">Office not found</string>
     <string name="office_not_found_message">This exchange office does not exist.</string>
     <string name="search_offices">Search offices</string>
+    <string name="all_cities">All</string>
     <string name="loading_offices">Loading data…</string>
     <string name="load_error_title">Could not load data</string>
+    <string name="error_network">Cannot connect. Check your internet connection and try again.</string>
+    <string name="error_server">Server error (HTTP %1$d). Please try again.</string>
     <string name="retry">Retry</string>
 </resources>

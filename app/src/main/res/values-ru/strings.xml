@@ -1,0 +1,43 @@
+<resources>
+    <!-- Screen titles -->
+    <string name="title_offices">Обменные пункты</string>
+    <string name="title_details">Об обменнике</string>
+    <string name="title_favorites">Избранное</string>
+
+    <!-- Buttons and icons -->
+    <string name="open_favorites">Открыть избранное</string>
+    <string name="back">Назад</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="remove_from_favorites">Удалить из избранного</string>
+
+    <!-- Rates -->
+    <string name="buy">Покупка USD</string>
+    <string name="sell">Продажа USD</string>
+    <string name="rate_value">%1$.2f ₸</string>
+    <string name="city_and_time">%1$s · обновлено в %2$s</string>
+    <string name="reference_rate_title">Справочный курс</string>
+    <string name="reference_rate_value">1 %1$s = %2$.2f %3$s</string>
+    <string name="reference_rate_date">Дата курса: %1$s</string>
+    <string name="reference_rate_source">Источник: Frankfurter. У каждого обменника свои курсы покупки и продажи.</string>
+
+    <!-- Details -->
+    <string name="office_image_description">Иллюстрация обменного пункта %1$s</string>
+    <string name="label_city">Город: %1$s</string>
+    <string name="label_address">Адрес: %1$s</string>
+    <string name="label_hours">Время работы: %1$s</string>
+
+    <!-- Empty states -->
+    <string name="empty_favorites_title">В избранном пока пусто</string>
+    <string name="empty_favorites_message">Нажмите на сердечко у обменника, чтобы добавить его сюда.</string>
+    <string name="empty_city_title">Ничего не найдено</string>
+    <string name="empty_city_message">По вашему запросу и городу обменники не найдены. Измените запрос или город.</string>
+    <string name="office_not_found_title">Обменник не найден</string>
+    <string name="office_not_found_message">Такого обменного пункта нет.</string>
+    <string name="search_offices">Поиск обменников</string>
+    <string name="all_cities">Все</string>
+    <string name="loading_offices">Загрузка данных…</string>
+    <string name="load_error_title">Не удалось загрузить данные</string>
+    <string name="error_network">Не удалось подключиться. Проверьте интернет и повторите попытку.</string>
+    <string name="error_server">Ошибка сервера (HTTP %1$d). Повторите попытку.</string>
+    <string name="retry">Повторить</string>
+</resources>

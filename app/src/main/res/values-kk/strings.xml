@@ -1,0 +1,43 @@
+<resources>
+    <!-- Screen titles -->
+    <string name="title_offices">Валюта айырбастау орындары</string>
+    <string name="title_details">Айырбастау орны</string>
+    <string name="title_favorites">Таңдаулылар</string>
+
+    <!-- Buttons and icons -->
+    <string name="open_favorites">Таңдаулыларды ашу</string>
+    <string name="back">Артқа</string>
+    <string name="add_to_favorites">Таңдаулыларға қосу</string>
+    <string name="remove_from_favorites">Таңдаулылардан алып тастау</string>
+
+    <!-- Rates -->
+    <string name="buy">USD сатып алу</string>
+    <string name="sell">USD сату</string>
+    <string name="rate_value">%1$.2f ₸</string>
+    <string name="city_and_time">%1$s · жаңартылған уақыты: %2$s</string>
+    <string name="reference_rate_title">Анықтамалық бағам</string>
+    <string name="reference_rate_value">1 %1$s = %2$.2f %3$s</string>
+    <string name="reference_rate_date">Бағам күні: %1$s</string>
+    <string name="reference_rate_source">Дереккөз: Frankfurter. Әр айырбастау орны сатып алу және сату бағасын өзі белгілейді.</string>
+
+    <!-- Details -->
+    <string name="office_image_description">%1$s айырбастау орнының иллюстрациясы</string>
+    <string name="label_city">Қала: %1$s</string>
+    <string name="label_address">Мекенжай: %1$s</string>
+    <string name="label_hours">Жұмыс уақыты: %1$s</string>
+
+    <!-- Empty states -->
+    <string name="empty_favorites_title">Таңдаулылар әзірге бос</string>
+    <string name="empty_favorites_message">Сақтау үшін айырбастау орнындағы жүрек белгісін басыңыз.</string>
+    <string name="empty_city_title">Ештеңе табылмады</string>
+    <string name="empty_city_message">Іздеу сұрауы мен қалаға сәйкес айырбастау орны табылмады. Сұрауды немесе қаланы өзгертіңіз.</string>
+    <string name="office_not_found_title">Айырбастау орны табылмады</string>
+    <string name="office_not_found_message">Мұндай айырбастау орны жоқ.</string>
+    <string name="search_offices">Айырбастау орнын іздеу</string>
+    <string name="all_cities">Барлығы</string>
+    <string name="loading_offices">Деректер жүктелуде…</string>
+    <string name="load_error_title">Деректерді жүктеу мүмкін болмады</string>
+    <string name="error_network">Қосылу мүмкін болмады. Интернетті тексеріп, қайталап көріңіз.</string>
+    <string name="error_server">Сервер қатесі (HTTP %1$d). Қайталап көріңіз.</string>
+    <string name="retry">Қайталау</string>
+</resources>

@@ -14,5 +14,6 @@ data class RateRadarUiState(
     val selectedOfficeId: Int? = null,
     val selectedOffice: ExchangeOffice? = null,
     val isLoading: Boolean = true,
-    val error: String? = null,
+    val error: Int? = null,
+    val httpErrorCode: Int? = null,
 )

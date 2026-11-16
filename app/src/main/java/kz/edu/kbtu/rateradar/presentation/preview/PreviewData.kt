@@ -1,5 +1,6 @@
 package kz.edu.kbtu.rateradar.presentation.preview
 
+import kz.edu.kbtu.rateradar.R
 import kz.edu.kbtu.rateradar.domain.model.ExchangeOffice
 import kz.edu.kbtu.rateradar.domain.model.ExchangeRate
 import kz.edu.kbtu.rateradar.presentation.RateRadarUiState
@@ -19,5 +20,5 @@ internal object PreviewData {
     )
     val loading = content.copy(isLoading = true)
     val empty = content.copy(offices = emptyList(), favoriteOffices = emptyList(), favoriteIds = emptySet(), selectedOfficeId = null, selectedOffice = null)
-    val error = content.copy(error = "Unable to load exchange offices. Please try again.")
+    val error = content.copy(error = R.string.error_network)
 }

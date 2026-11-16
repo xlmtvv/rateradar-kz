@@ -16,8 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import kz.edu.kbtu.rateradar.R
 import kz.edu.kbtu.rateradar.presentation.theme.RateRadarTheme
 import kz.edu.kbtu.rateradar.presentation.theme.Sizes
 import kz.edu.kbtu.rateradar.presentation.theme.Spacing
@@ -67,8 +69,8 @@ private fun EmptyStatePreview() {
     RateRadarTheme {
         EmptyState(
             icon = Icons.Outlined.FavoriteBorder,
-            title = "No favorites yet",
-            message = "Tap the heart on an office to save it here.",
+            title = stringResource(R.string.empty_favorites_title),
+            message = stringResource(R.string.empty_favorites_message),
         )
     }
 }
@@ -80,8 +82,8 @@ private fun EmptyStateDarkPreview() {
         Surface(color = MaterialTheme.colorScheme.background) {
             EmptyState(
                 icon = Icons.Outlined.FavoriteBorder,
-                title = "No favorites yet",
-                message = "Tap the heart on an office to save it here.",
+                title = stringResource(R.string.empty_favorites_title),
+                message = stringResource(R.string.empty_favorites_message),
                 modifier = Modifier.fillMaxSize(),
             )
         }

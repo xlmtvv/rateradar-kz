@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kz.edu.kbtu.rateradar.R
 import kz.edu.kbtu.rateradar.data.remote.ApiService
 import kz.edu.kbtu.rateradar.data.remote.ExchangeRateDto
 import kz.edu.kbtu.rateradar.data.repository.ExchangeOfficeRepository
@@ -153,10 +154,7 @@ class RateRadarViewModelTest {
         val viewModel = RateRadarViewModel(ExchangeOfficeRepository(), apiService)
         advanceUntilIdle()
         assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(
-            "Cannot connect. Check your internet connection and try again.",
-            viewModel.uiState.value.error,
-        )
+        assertEquals(R.string.error_network, viewModel.uiState.value.error)
         assertTrue(viewModel.uiState.value.exchangeRates.isEmpty())
 
         apiService.failure = null
@@ -166,6 +164,7 @@ class RateRadarViewModelTest {
         advanceUntilIdle()
         assertFalse(viewModel.uiState.value.isLoading)
         assertNull(viewModel.uiState.value.error)
+        assertNull(viewModel.uiState.value.httpErrorCode)
         assertEquals(expectedRates, viewModel.uiState.value.exchangeRates)
     }
 
@@ -177,8 +176,16 @@ class RateRadarViewModelTest {
         val viewModel = RateRadarViewModel(ExchangeOfficeRepository(), apiService)
         advanceUntilIdle()
         assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals("Server error (HTTP 503). Please try again.", viewModel.uiState.value.error)
+        assertEquals(R.string.error_server, viewModel.uiState.value.error)
+        assertEquals(503, viewModel.uiState.value.httpErrorCode)
         assertTrue(viewModel.uiState.value.exchangeRates.isEmpty())
+
+        apiService.failure = null
+        viewModel.onRetry()
+        assertNull(viewModel.uiState.value.error)
+        assertNull(viewModel.uiState.value.httpErrorCode)
+        advanceUntilIdle()
+        assertEquals(expectedRates, viewModel.uiState.value.exchangeRates)
     }
 }
 

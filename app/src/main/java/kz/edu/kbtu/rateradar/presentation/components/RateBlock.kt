@@ -45,7 +45,7 @@ fun RateBlock(
 @Composable
 private fun RateBlockPreview() {
     RateRadarTheme {
-        RateBlock(label = "Buy USD", rate = 512.5)
+        RateBlock(label = stringResource(R.string.buy), rate = 512.5)
     }
 }
 
@@ -53,6 +53,6 @@ private fun RateBlockPreview() {
 @Composable
 private fun RateBlockDarkPreview() {
     RateRadarTheme {
-        RateBlock(label = "Sell USD", rate = 515.0)
+        RateBlock(label = stringResource(R.string.sell), rate = 515.0)
     }
 }

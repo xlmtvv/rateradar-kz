@@ -70,7 +70,12 @@ fun OfficeDetailsScreen(
     ) { innerPadding ->
         when {
             uiState.isLoading -> LoadingState(Modifier.padding(innerPadding))
-            uiState.error != null -> LoadErrorState(uiState.error, onRetry, Modifier.padding(innerPadding))
+            uiState.error != null -> LoadErrorState(
+                error = uiState.error,
+                onRetry = onRetry,
+                modifier = Modifier.padding(innerPadding),
+                httpErrorCode = uiState.httpErrorCode,
+            )
             office == null -> {
                 EmptyState(
                     icon = Icons.Outlined.Info,

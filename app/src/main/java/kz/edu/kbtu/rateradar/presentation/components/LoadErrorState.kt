@@ -22,14 +22,24 @@ import kz.edu.kbtu.rateradar.presentation.theme.Sizes
 import kz.edu.kbtu.rateradar.presentation.theme.Spacing
 
 @Composable
-fun LoadErrorState(error: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+fun LoadErrorState(
+    error: Int,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+    httpErrorCode: Int? = null,
+) {
+    val message = if (httpErrorCode == null) {
+        stringResource(error)
+    } else {
+        stringResource(error, httpErrorCode)
+    }
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Spacing.large, Alignment.CenterVertically),
     ) {
         Text(stringResource(R.string.load_error_title), style = MaterialTheme.typography.titleMedium)
-        Text(error, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
+        Text(message, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium)
         Button(onClick = onRetry, modifier = Modifier.heightIn(min = Sizes.minTouchTarget)) {
             Text(stringResource(R.string.retry))
         }
@@ -39,5 +49,5 @@ fun LoadErrorState(error: String, onRetry: () -> Unit, modifier: Modifier = Modi
 @Preview(showBackground = true)
 @Composable
 private fun LoadErrorStatePreview() {
-    RateRadarTheme { LoadErrorState(error = "Unable to load exchange offices.", onRetry = {}) }
+    RateRadarTheme { LoadErrorState(error = R.string.error_network, onRetry = {}) }
 }

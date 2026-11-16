@@ -55,7 +55,12 @@ fun FavoritesScreen(
         val modifier = Modifier.padding(innerPadding)
         when {
             uiState.isLoading -> LoadingState(modifier)
-            uiState.error != null -> LoadErrorState(uiState.error, onRetry, modifier)
+            uiState.error != null -> LoadErrorState(
+                error = uiState.error,
+                onRetry = onRetry,
+                modifier = modifier,
+                httpErrorCode = uiState.httpErrorCode,
+            )
             uiState.favoriteOffices.isEmpty() -> EmptyState(
                 icon = Icons.Outlined.FavoriteBorder,
                 title = stringResource(R.string.empty_favorites_title),

@@ -10,6 +10,22 @@ An Android app for browsing demo exchange offices in Kazakhstan. SIS4 refactored
 
 All three screens support loading, content, empty and error states. Every screen has four state previews, plus a dark content preview. The existing light/dark theme, spacing and reusable cards are kept.
 
+## Languages
+
+The interface supports English, Russian and Kazakh using standard Android string resources:
+
+- `res/values/strings.xml`: English and the fallback for other languages.
+- `res/values-ru/strings.xml`: Russian.
+- `res/values-kk/strings.xml`: Kazakh (`kk` is the language code).
+
+The keys are the same in all three files. Existing `stringResource(R.string...)` calls select the matching translation automatically. App branding, office names, cities, addresses and API values stay in their original form; the All filter label is translated separately from its internal value.
+
+Error state stores a string resource ID and, for HTTP errors, the status code. `LoadErrorState` resolves and formats the message with `stringResource`, so changing the language also translates an existing error.
+
+The app follows the device language. On Android 13 and newer, its language can also be selected in Settings → Apps → RateRadar KZ → Language. `res/xml/locales_config.xml` lists the supported languages, and `AndroidManifest.xml` references this file.
+
+Verified on the Android 16 emulator: the system language picker lists all three languages; List, Details and Favorites display their translations in each language; an offline error also updates when the app language changes. Ten ViewModel tests, the debug build/install and Android Lint passed. All translation keys and format arguments match the English resources. The original emulator language and network settings were restored.
+
 ## Practice 8 - REST API
 
 The endpoint was opened in a browser before implementation:
