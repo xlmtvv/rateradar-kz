@@ -20,6 +20,16 @@
     <string name="reference_rate_date">Дата курса: %1$s</string>
     <string name="reference_rate_source">Источник: Frankfurter. У каждого обменника свои курсы покупки и продажи.</string>
 
+    <!-- Rate reminder -->
+    <string name="rate_reminder_start">Напомнить через 10 секунд</string>
+    <string name="rate_reminder_cancel">Отменить напоминание</string>
+    <string name="rate_reminder_scheduled">Проверим курс через 10 секунд. Приложение можно свернуть.</string>
+    <string name="rate_reminder_loading">Обновляем курс…</string>
+    <string name="rate_reminder_error">Не удалось обновить курс. Проверьте подключение и повторите попытку.</string>
+    <string name="rate_reminder_permission_error">Уведомления выключены. Разрешите их в настройках, чтобы поставить напоминание.</string>
+    <string name="rate_reminder_channel">Напоминания о курсе</string>
+    <string name="rate_reminder_title">Проверьте курс USD/KZT</string>
+
     <!-- Details -->
     <string name="office_image_description">Иллюстрация обменного пункта %1$s</string>
     <string name="label_city">Город: %1$s</string>

@@ -22,6 +22,16 @@
     <string name="reference_rate_date">Rate date: %1$s</string>
     <string name="reference_rate_source">Source: Frankfurter. Exchange offices set their own buy/sell prices.</string>
 
+    <!-- Rate reminder -->
+    <string name="rate_reminder_start">Remind me in 10 seconds</string>
+    <string name="rate_reminder_cancel">Cancel reminder</string>
+    <string name="rate_reminder_scheduled">We’ll check the rate in 10 seconds. You can go to the home screen.</string>
+    <string name="rate_reminder_loading">Updating the rate…</string>
+    <string name="rate_reminder_error">Could not update the rate. Check your connection and try again.</string>
+    <string name="rate_reminder_permission_error">Notifications are off. Allow them in Settings to set a reminder.</string>
+    <string name="rate_reminder_channel">Exchange rate reminders</string>
+    <string name="rate_reminder_title">Check the USD/KZT rate</string>
+
     <!-- Details -->
     <string name="office_image_description">Illustration of the %1$s exchange office</string>
     <string name="label_city">City: %1$s</string>

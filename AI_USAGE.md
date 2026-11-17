@@ -56,3 +56,7 @@ Verification after the moves: ten ViewModel tests, debug assembly, and a success
 Codex assisted with adding `values-ru` and `values-kk` string resources, a supported-languages XML file and the manifest reference. Network and HTTP errors now store a string resource ID instead of a hardcoded English message; the UI resolves it in the current language. The All filter and component previews use string resources too. Existing tests and the README were updated. Office data and the API request were not translated.
 
 Verification covered matching resource keys and format arguments, ten ViewModel tests, debug build/install, Android Lint, all three screens in each language, and offline errors while switching languages. The emulator's original language and network settings were restored after testing.
+
+## Rate reminder practice
+
+Codex assisted with the 10-second rate reminder on Office Details, including permissions, cancellation, translations, and the notification. After reviewing the defense checklist, the start and cancel buttons were separated and a rate request with loading, error, and Retry was connected to the timer. The tests cover repeated starts, cancellation, and recovery after a failed request.

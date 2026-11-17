@@ -26,6 +26,16 @@ The app follows the device language. On Android 13 and newer, its language can a
 
 Verified on the Android 16 emulator: the system language picker lists all three languages; List, Details and Favorites display their translations in each language; an offline error also updates when the app language changes. Ten ViewModel tests, the debug build/install and Android Lint passed. All translation keys and format arguments match the English resources. The original emulator language and network settings were restored.
 
+## Rate reminder
+
+Open any office and tap **Remind me in 10 seconds** below the USD/KZT reference rate. On Android 13 and newer, Android asks for permission if needed. If you decline, the screen shows a message about notification settings. Tap again and choose **Allow** to start the timer.
+
+While the timer runs, the start button is disabled and a separate **Cancel reminder** button is shown. A coroutine in the shared ViewModel waits with `delay(10_000)`, then requests the latest reference rate. You can press Home while waiting. If the request succeeds, the app displays the rate in one local notification. Tap it to return to the app. If the request fails, the details screen shows an error and **Retry**. Retry requests the rate immediately.
+
+To check the assignment, start with a fresh install on an emulator running API 33 or newer. Deny permission, then tap again and allow it. Rotate the screen while the timer runs. For the double-tap check, wait until the start button is available again and tap it twice quickly. For the failure check, start the timer with an office already open, enable airplane mode and turn off Wi-Fi. Wait for the error, restore the connection, and tap **Retry**.
+
+The timer survives screen rotation because it belongs to the shared ViewModel. Closing the app completely, or Android ending its process, clears the timer.
+
 ## Practice 8 - REST API
 
 The endpoint was opened in a browser before implementation:

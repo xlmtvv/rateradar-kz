@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import java.io.IOException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,7 @@ class RateRadarViewModel(
 
     private var allOffices: List<ExchangeOffice> = emptyList()
     private var loadJob: Job? = null
+    private var rateReminderJob: Job? = null
 
     init {
         Log.d("RateRadarViewModel", "init instance=${System.identityHashCode(this)}")
@@ -58,20 +60,49 @@ class RateRadarViewModel(
         _uiState.update { state -> updatedState(state.copy(selectedOfficeId = id)) }
     }
 
+    fun startRateReminder(onFinished: (ExchangeRate) -> Unit) {
+        if (rateReminderJob?.isActive == true) return
+
+        val isRetry = _uiState.value.rateReminderStatus == RateReminderStatus.ERROR
+        val startStatus = if (isRetry) RateReminderStatus.LOADING else RateReminderStatus.WAITING
+        _uiState.update { it.copy(rateReminderStatus = startStatus) }
+
+        rateReminderJob = viewModelScope.launch {
+            if (!isRetry) {
+                delay(10_000)
+                _uiState.update { it.copy(rateReminderStatus = RateReminderStatus.LOADING) }
+            }
+
+            val rates = try {
+                loadRates()
+            } catch (exception: IOException) {
+                emptyList()
+            } catch (exception: HttpException) {
+                emptyList()
+            }
+
+            val rate = rates.firstOrNull()
+            if (rate == null) {
+                _uiState.update { it.copy(rateReminderStatus = RateReminderStatus.ERROR) }
+            } else {
+                _uiState.update { it.copy(rateReminderStatus = RateReminderStatus.IDLE, exchangeRates = rates) }
+                onFinished(rate)
+            }
+        }
+    }
+
+    fun cancelRateReminder() {
+        rateReminderJob?.cancel()
+        _uiState.update { it.copy(rateReminderStatus = RateReminderStatus.IDLE) }
+    }
+
     fun onRetry() {
         if (loadJob?.isActive == true) return
         _uiState.update { it.copy(isLoading = true, error = null, httpErrorCode = null) }
         loadJob = viewModelScope.launch {
             try {
                 allOffices = repository.loadOffices()
-                val rates = apiService.getRates().map { rate ->
-                    ExchangeRate(
-                        date = rate.date,
-                        base = rate.base,
-                        quote = rate.quote,
-                        rate = rate.rate,
-                    )
-                }
+                val rates = loadRates()
                 _uiState.update { state ->
                     updatedState(state.copy(exchangeRates = rates, isLoading = false, error = null))
                 }
@@ -84,6 +115,12 @@ class RateRadarViewModel(
                     it.copy(isLoading = false, error = R.string.error_server, httpErrorCode = exception.code())
                 }
             }
+        }
+    }
+
+    private suspend fun loadRates(): List<ExchangeRate> {
+        return apiService.getRates().map { rate ->
+            ExchangeRate(date = rate.date, base = rate.base, quote = rate.quote, rate = rate.rate)
         }
     }
 

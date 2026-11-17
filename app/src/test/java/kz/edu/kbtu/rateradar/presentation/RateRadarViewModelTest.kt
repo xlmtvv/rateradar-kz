@@ -4,6 +4,7 @@ import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -187,13 +188,78 @@ class RateRadarViewModelTest {
         advanceUntilIdle()
         assertEquals(expectedRates, viewModel.uiState.value.exchangeRates)
     }
+
+    @Test
+    fun rateReminderFiresOnceAfterTenSeconds() = runTest(dispatcher) {
+        val viewModel = RateRadarViewModel(ExchangeOfficeRepository(), apiService)
+        var notifications = 0
+
+        viewModel.startRateReminder { notifications++ }
+        viewModel.startRateReminder { notifications++ }
+        assertTrue(viewModel.uiState.value.isRateReminderRunning)
+
+        advanceTimeBy(9_999)
+        assertEquals(0, notifications)
+        assertTrue(viewModel.uiState.value.isRateReminderRunning)
+
+        advanceTimeBy(1)
+        runCurrent()
+        assertEquals(1, notifications)
+        assertEquals(2, apiService.rateRequests)
+        assertFalse(viewModel.uiState.value.isRateReminderRunning)
+    }
+
+    @Test
+    fun canceledRateReminderDoesNotNotify() = runTest(dispatcher) {
+        val viewModel = RateRadarViewModel(ExchangeOfficeRepository(), apiService)
+        var notifications = 0
+
+        viewModel.startRateReminder { notifications++ }
+        advanceTimeBy(1_000)
+        viewModel.cancelRateReminder()
+        advanceUntilIdle()
+
+        assertEquals(0, notifications)
+        assertEquals(1, apiService.rateRequests)
+        assertFalse(viewModel.uiState.value.isRateReminderRunning)
+    }
+
+    @Test
+    fun rateReminderRetriesFailedRequestWithoutWaitingAgain() = runTest(dispatcher) {
+        val viewModel = RateRadarViewModel(ExchangeOfficeRepository(), apiService)
+        advanceUntilIdle()
+        apiService.responseDelay = 500
+        apiService.failure = IOException("No connection")
+        var notifiedRate: ExchangeRate? = null
+
+        viewModel.startRateReminder { notifiedRate = it }
+        advanceTimeBy(10_000)
+        runCurrent()
+        assertEquals(RateReminderStatus.LOADING, viewModel.uiState.value.rateReminderStatus)
+        advanceTimeBy(500)
+        runCurrent()
+        assertEquals(RateReminderStatus.ERROR, viewModel.uiState.value.rateReminderStatus)
+        assertNull(notifiedRate)
+
+        apiService.failure = null
+        viewModel.startRateReminder { notifiedRate = it }
+        assertEquals(RateReminderStatus.LOADING, viewModel.uiState.value.rateReminderStatus)
+        advanceTimeBy(500)
+        runCurrent()
+        assertEquals(expectedRates.first(), notifiedRate)
+        assertEquals(RateReminderStatus.IDLE, viewModel.uiState.value.rateReminderStatus)
+    }
 }
 
 private class FakeApiService : ApiService {
     val rates = listOf(ExchangeRateDto("2026-10-27", "USD", "KZT", 450.0))
     var failure: Exception? = null
+    var responseDelay = 0L
+    var rateRequests = 0
 
     override suspend fun getRates(): List<ExchangeRateDto> {
+        rateRequests++
+        if (responseDelay > 0) delay(responseDelay)
         val exception = failure
         if (exception != null) throw exception
         return rates

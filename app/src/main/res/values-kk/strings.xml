@@ -20,6 +20,16 @@
     <string name="reference_rate_date">Бағам күні: %1$s</string>
     <string name="reference_rate_source">Дереккөз: Frankfurter. Әр айырбастау орны сатып алу және сату бағасын өзі белгілейді.</string>
 
+    <!-- Rate reminder -->
+    <string name="rate_reminder_start">10 секундтан кейін еске салу</string>
+    <string name="rate_reminder_cancel">Еске салудан бас тарту</string>
+    <string name="rate_reminder_scheduled">Бағамды 10 секундтан кейін тексереміз. Басты экранға шыға аласыз.</string>
+    <string name="rate_reminder_loading">Бағам жаңартылуда…</string>
+    <string name="rate_reminder_error">Бағам жаңартылмады. Интернет байланысын тексеріп, қайталап көріңіз.</string>
+    <string name="rate_reminder_permission_error">Хабарландырулар өшірулі. Еске салу үшін оларға баптаулардан рұқсат беріңіз.</string>
+    <string name="rate_reminder_channel">Бағам туралы еске салулар</string>
+    <string name="rate_reminder_title">USD/KZT бағамын тексеріңіз</string>
+
     <!-- Details -->
     <string name="office_image_description">%1$s айырбастау орнының иллюстрациясы</string>
     <string name="label_city">Қала: %1$s</string>

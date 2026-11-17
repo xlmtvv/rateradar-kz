@@ -20,10 +20,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import kz.edu.kbtu.rateradar.R
 import kz.edu.kbtu.rateradar.presentation.RateRadarUiState
+import kz.edu.kbtu.rateradar.presentation.RateReminderStatus
 import kz.edu.kbtu.rateradar.presentation.preview.PreviewData
 import kz.edu.kbtu.rateradar.presentation.components.LoadingState
 import kz.edu.kbtu.rateradar.presentation.components.LoadErrorState
@@ -49,6 +52,9 @@ fun OfficeDetailsScreen(
     onBackClick: () -> Unit,
     onFavoriteClick: (Int) -> Unit,
     onRetry: () -> Unit,
+    onRateReminderClick: () -> Unit = {},
+    showNotificationError: Boolean = false,
+    onCancelRateReminder: () -> Unit = {},
 ) {
     val office = uiState.selectedOffice
     val isFavorite = office != null && office.id in uiState.favoriteIds
@@ -159,6 +165,44 @@ fun OfficeDetailsScreen(
                                 text = stringResource(R.string.reference_rate_source),
                                 style = MaterialTheme.typography.bodySmall,
                             )
+                            val reminderButton = if (uiState.rateReminderStatus == RateReminderStatus.ERROR) {
+                                R.string.retry
+                            } else {
+                                R.string.rate_reminder_start
+                            }
+                            OutlinedButton(
+                                onClick = onRateReminderClick,
+                                enabled = !uiState.isRateReminderRunning,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(stringResource(reminderButton))
+                            }
+                            if (uiState.isRateReminderRunning) {
+                                val statusText = if (uiState.rateReminderStatus == RateReminderStatus.LOADING) {
+                                    R.string.rate_reminder_loading
+                                } else {
+                                    R.string.rate_reminder_scheduled
+                                }
+                                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                Text(stringResource(statusText), style = MaterialTheme.typography.bodySmall)
+                                TextButton(onClick = onCancelRateReminder) {
+                                    Text(stringResource(R.string.rate_reminder_cancel))
+                                }
+                            }
+                            if (uiState.rateReminderStatus == RateReminderStatus.ERROR) {
+                                Text(
+                                    text = stringResource(R.string.rate_reminder_error),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+                            if (showNotificationError) {
+                                Text(
+                                    text = stringResource(R.string.rate_reminder_permission_error),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
                         }
                     }
 
